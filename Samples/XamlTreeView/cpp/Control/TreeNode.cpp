@@ -13,7 +13,7 @@ namespace TreeViewControl {
 
     TreeNode::TreeNode()
     {
-        childrenVector->VectorChanged += ref new VectorChangedEventHandler<TreeNode ^>(this, &TreeNode::ChildrenVectorChanged);
+		childrenVector->VectorChanged += ref new VectorChangedEventHandler<TreeNode ^>(this, &TreeNode::ChildrenVectorChanged);
     }
 
     void TreeNode::Append(Object^ value)
@@ -194,15 +194,28 @@ namespace TreeViewControl {
 
     int TreeNode::Depth::get()
     {
-        TreeNode^ ancestorNode = this;
-        int depth = -1;
-        while ((ancestorNode->ParentNode) != nullptr)
-        {
-            depth++;
-            ancestorNode = ancestorNode->ParentNode;
-        }
-
-        return depth;
+		if (_depth == -1) {
+			TreeNode^ ancestorNode = this;
+			int depth = -1;
+			while ((ancestorNode->ParentNode) != nullptr)
+			{
+				depth++;
+				ancestorNode = ancestorNode->ParentNode;
+			}
+			_depth = depth;
+		}
+		return _depth;
     }
 
+	void TreeNode::Depth::set(int value)
+	{
+		_depth = value;
+		int count = childrenVector->Size;
+		TreeNode^ childNode;
+		for (int i = 0; i < (int)Size; i++)
+		{
+			childNode = (TreeNode^)GetAt(i);
+			childNode->Depth = (value+1);
+		}
+	}
 }

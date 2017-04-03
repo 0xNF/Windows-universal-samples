@@ -86,11 +86,13 @@ namespace TreeViewControl {
         property int Depth
         {
             int get();
+			void set(int value);
         }
 
         event Windows::UI::Xaml::Interop::BindableVectorChangedEventHandler^ TreeNodeChanged;
 
     private:
+		int _depth = -1;
         TreeNode^ parentNode = nullptr;
         Object^ data = nullptr;
         bool isExpanded = false;
