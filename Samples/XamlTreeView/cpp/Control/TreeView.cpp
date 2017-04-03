@@ -15,11 +15,12 @@ namespace TreeViewControl {
 
         flatViewModel->ExpandNode(rootNode);
 
-        CanReorderItems = true;
-        AllowDrop = true;
-        CanDragItems = true;
+        CanReorderItems = false;
+        AllowDrop = false;
+        CanDragItems = false;
 
-        rootNode->VectorChanged += ref new BindableVectorChangedEventHandler(flatViewModel, &ViewModel::TreeNodeVectorChanged);
+		evhan = ref new BindableVectorChangedEventHandler(flatViewModel, &ViewModel::TreeNodeVectorChanged);
+		handlerCookie = rootNode->VectorChanged += evhan;
         ItemClick += ref new Windows::UI::Xaml::Controls::ItemClickEventHandler(this, &TreeView::TreeView_OnItemClick);
         DragItemsStarting += ref new Windows::UI::Xaml::Controls::DragItemsStartingEventHandler(this, &TreeView::TreeView_DragItemsStarting);
         DragItemsCompleted += ref new Windows::Foundation::TypedEventHandler<Windows::UI::Xaml::Controls::ListViewBase ^, Windows::UI::Xaml::Controls::DragItemsCompletedEventArgs ^>(this, &TreeView::TreeView_DragItemsCompleted);
@@ -186,4 +187,18 @@ namespace TreeViewControl {
         TreeViewItem^ targetItem = ref new TreeViewItem();
         return (DependencyObject^)targetItem;
     }
+
+	void TreeView::AddRange(Windows::UI::Xaml::Interop::IBindableIterable^ vector) {
+		rootNode->VectorChanged -= handlerCookie;
+		IBindableIterator^ iter = vector->First();
+		int i = 0;
+		while (iter->HasCurrent) {
+			rootNode->Append(iter->Current);
+			flatViewModel->InsertAt(i, iter->Current);
+			iter->MoveNext();
+			i++;
+		}
+		handlerCookie = rootNode->VectorChanged += evhan;
+		this->UpdateLayout();
+	}
 }

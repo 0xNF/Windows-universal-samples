@@ -57,6 +57,8 @@ namespace TreeViewControl {
 
         void CollapseNode(TreeNode^ targetNode);
 
+		void AddRange(Windows::UI::Xaml::Interop::IBindableIterable^ vector);
+
     protected:
         void PrepareContainerForItemOverride(DependencyObject^ element, Object^ item) override;
         Windows::UI::Xaml::DependencyObject^ GetContainerForItemOverride() override;
@@ -67,6 +69,10 @@ namespace TreeViewControl {
     private:
         TreeNode^ rootNode;
         ViewModel^ flatViewModel;
+
+		Windows::Foundation::EventRegistrationToken handlerCookie;
+		Windows::UI::Xaml::Interop::BindableVectorChangedEventHandler^ evhan;
+
 
     internal:
         TreeViewItem^ draggedTreeViewItem;
