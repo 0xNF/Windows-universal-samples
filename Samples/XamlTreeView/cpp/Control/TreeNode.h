@@ -91,12 +91,18 @@ namespace TreeViewControl {
 
         event Windows::UI::Xaml::Interop::BindableVectorChangedEventHandler^ TreeNodeChanged;
 
+	internal:
+		void fastClear();
+		Windows::Foundation::EventRegistrationToken childVectorChangedEventToken;
+		//Windows::UI::Xaml::Interop::BindableVectorChangedEventHandler^ evhan;
+		Platform::Collections::Vector<TreeNode^>^ childrenVector = ref new Platform::Collections::Vector<TreeNode^>();
+		Windows::Foundation::Collections::VectorChangedEventHandler<TreeNode^>^ evhan;
+
     private:
 		int _depth = -1;
         TreeNode^ parentNode = nullptr;
         Object^ data = nullptr;
         bool isExpanded = false;
-        Platform::Collections::Vector<TreeNode^>^ childrenVector = ref new Platform::Collections::Vector<TreeNode^>();
         void ChildrenVectorChanged(Windows::Foundation::Collections::IObservableVector<TreeNode^>^ sender, Windows::Foundation::Collections::IVectorChangedEventArgs^ e);
     };
 }

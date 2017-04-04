@@ -59,6 +59,8 @@ namespace TreeViewControl {
 
 		void AddRange(Windows::UI::Xaml::Interop::IBindableIterable^ vector);
 
+		void Clear();
+
     protected:
         void PrepareContainerForItemOverride(DependencyObject^ element, Object^ item) override;
         Windows::UI::Xaml::DependencyObject^ GetContainerForItemOverride() override;

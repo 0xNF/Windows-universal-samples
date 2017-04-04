@@ -13,7 +13,8 @@ namespace TreeViewControl {
 
     TreeNode::TreeNode()
     {
-		childrenVector->VectorChanged += ref new VectorChangedEventHandler<TreeNode ^>(this, &TreeNode::ChildrenVectorChanged);
+		evhan = ref new VectorChangedEventHandler<TreeNode ^>(this, &TreeNode::ChildrenVectorChanged);
+		childVectorChangedEventToken = childrenVector->VectorChanged += evhan;
     }
 
     void TreeNode::Append(Object^ value)
@@ -217,5 +218,26 @@ namespace TreeViewControl {
 			childNode = (TreeNode^)GetAt(i);
 			childNode->Depth = (value+1);
 		}
+	}
+
+	void TreeNode::fastClear() {
+		childrenVector->VectorChanged -= childVectorChangedEventToken;
+		int count = childrenVector->Size;
+		TreeNode^ childNode;
+		for (int i = 0; i < (int)Size; i++)
+		{
+			childNode = (TreeNode^)GetAt(i);
+			childNode->ParentNode = nullptr;
+		}
+		childrenVector->Clear();
+		childVectorChangedEventToken = childrenVector->VectorChanged += ref new VectorChangedEventHandler<TreeNode ^>(this, &TreeNode::ChildrenVectorChanged);
+
+		//If the count was not 0 before we cleared, then the HasItems property needs to change.
+		if (count != 0)
+		{
+			this->PropertyChanged(this, ref new Windows::UI::Xaml::Data::PropertyChangedEventArgs("HasItems"));
+		}
+
+		this->PropertyChanged(this, ref new Windows::UI::Xaml::Data::PropertyChangedEventArgs("Size"));
 	}
 }

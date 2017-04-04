@@ -190,6 +190,7 @@ namespace TreeViewControl {
 
 	void TreeView::AddRange(Windows::UI::Xaml::Interop::IBindableIterable^ vector) {
 		rootNode->VectorChanged -= handlerCookie;
+		rootNode->childrenVector->VectorChanged -= rootNode->childVectorChangedEventToken;
 		IBindableIterator^ iter = vector->First();
 		int i = 0;
 		while (iter->HasCurrent) {
@@ -199,6 +200,19 @@ namespace TreeViewControl {
 			i++;
 		}
 		handlerCookie = rootNode->VectorChanged += evhan;
-		this->UpdateLayout();
+		rootNode->childVectorChangedEventToken = rootNode->childrenVector->VectorChanged += rootNode->evhan;
+		//this->UpdateLayout();
+	}
+
+	void TreeView::Clear() {
+		rootNode->VectorChanged -= handlerCookie;
+		rootNode->childrenVector->VectorChanged -= rootNode->childVectorChangedEventToken;
+		while (this->rootNode->HasItems) {
+			this->flatViewModel->RemoveAtEnd();
+			this->rootNode->RemoveAtEnd();
+		}
+		handlerCookie = rootNode->VectorChanged += evhan;
+		rootNode->childVectorChangedEventToken = rootNode->childrenVector->VectorChanged += rootNode->evhan;
+
 	}
 }
