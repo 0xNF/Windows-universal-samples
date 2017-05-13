@@ -1,10 +1,11 @@
 #pragma once
 #include "pch.h"
 #include "TreeView.h"
-
+#include <ppltasks.h>
 using namespace Windows::UI::Xaml;
 using namespace Windows::UI::Xaml::Interop;
 using namespace Windows::UI::Xaml::Controls;
+using namespace concurrency;
 
 namespace TreeViewControl {
 
@@ -215,4 +216,26 @@ namespace TreeViewControl {
 		rootNode->childVectorChangedEventToken = rootNode->childrenVector->VectorChanged += rootNode->evhan;
 
 	}
+
+
+	void TreeView::buildNodeInBackground(Windows::UI::Xaml::Interop::IBindableIterable^ vector) {
+
+		Windows::Foundation::IAsyncAction^ Op1 = create_async([vector] {
+			ViewModel^ new_flatViewModel = ref new ViewModel();
+			TreeNode^ new_rootNode = ref new TreeNode();
+			//new_flatViewModel->ExpandNode(new_rootNode);
+			IBindableIterator^ iter = vector->First();
+			int i = 0;
+			while (iter->HasCurrent) {
+				new_rootNode->Append(iter->Current);
+				new_flatViewModel->InsertAt(i, iter->Current);
+				iter->MoveNext();
+				i++;
+			}
+		});
+		create_task(Op1).then([] () {
+
+		});
+	}
+
 }

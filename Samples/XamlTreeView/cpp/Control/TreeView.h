@@ -61,6 +61,8 @@ namespace TreeViewControl {
 
 		void Clear();
 
+		void buildNodeInBackground(Windows::UI::Xaml::Interop::IBindableIterable^ vector);
+
     protected:
         void PrepareContainerForItemOverride(DependencyObject^ element, Object^ item) override;
         Windows::UI::Xaml::DependencyObject^ GetContainerForItemOverride() override;
