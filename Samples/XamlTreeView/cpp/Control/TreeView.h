@@ -57,6 +57,8 @@ namespace TreeViewControl {
 
         void CollapseNode(TreeNode^ targetNode);
 
+		void newNode();
+
 		void AddRange(Windows::UI::Xaml::Interop::IBindableIterable^ vector);
 
 		void Clear();

@@ -24,11 +24,7 @@ namespace TreeViewControl {
 
     void ViewModel::Clear()
     {
-
-        while (flatVectorRealizedItems->Size != 0)
-        {
-            RemoveAtEnd();
-        }
+		flatVectorRealizedItems->Clear();
     }
 
     IBindableIterator^ ViewModel::First()

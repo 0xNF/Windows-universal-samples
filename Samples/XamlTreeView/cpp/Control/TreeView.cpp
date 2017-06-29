@@ -189,6 +189,20 @@ namespace TreeViewControl {
         return (DependencyObject^)targetItem;
     }
 
+	void TreeView::newNode() {
+		rootNode->childrenVector->Clear();
+		flatViewModel->Clear();
+
+		flatViewModel->ExpandNode(rootNode);
+
+		evhan = ref new BindableVectorChangedEventHandler(flatViewModel, &ViewModel::TreeNodeVectorChanged);
+		handlerCookie = rootNode->VectorChanged += evhan;
+		ItemClick += ref new Windows::UI::Xaml::Controls::ItemClickEventHandler(this, &TreeView::TreeView_OnItemClick);
+		DragItemsStarting += ref new Windows::UI::Xaml::Controls::DragItemsStartingEventHandler(this, &TreeView::TreeView_DragItemsStarting);
+		DragItemsCompleted += ref new Windows::Foundation::TypedEventHandler<Windows::UI::Xaml::Controls::ListViewBase ^, Windows::UI::Xaml::Controls::DragItemsCompletedEventArgs ^>(this, &TreeView::TreeView_DragItemsCompleted);
+		ItemsSource = flatViewModel;
+	}
+
 	void TreeView::AddRange(Windows::UI::Xaml::Interop::IBindableIterable^ vector) {
 		rootNode->VectorChanged -= handlerCookie;
 		rootNode->childrenVector->VectorChanged -= rootNode->childVectorChangedEventToken;
@@ -200,18 +214,15 @@ namespace TreeViewControl {
 			iter->MoveNext();
 			i++;
 		}
-		handlerCookie = rootNode->VectorChanged += evhan;
-		rootNode->childVectorChangedEventToken = rootNode->childrenVector->VectorChanged += rootNode->evhan;
-		//this->UpdateLayout();
+		//handlerCookie = rootNode->VectorChanged += evhan; //Is this unnecessary?
+		//rootNode->childVectorChangedEventToken = rootNode->childrenVector->VectorChanged += rootNode->evhan; //Is this also unnecessary?
 	}
 
 	void TreeView::Clear() {
 		rootNode->VectorChanged -= handlerCookie;
 		rootNode->childrenVector->VectorChanged -= rootNode->childVectorChangedEventToken;
-		while (this->rootNode->HasItems) {
-			this->flatViewModel->RemoveAtEnd();
-			this->rootNode->RemoveAtEnd();
-		}
+		rootNode->childrenVector->Clear();
+		flatViewModel->Clear();
 		handlerCookie = rootNode->VectorChanged += evhan;
 		rootNode->childVectorChangedEventToken = rootNode->childrenVector->VectorChanged += rootNode->evhan;
 
